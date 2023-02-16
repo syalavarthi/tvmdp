@@ -53,9 +53,30 @@ source_group(
   FILES ${HEADER_LIST_LIBRARY} ${HEADER_LIST_WRAPPER}
 )
 
-# install libs
-install(TARGETS tvmdp DESTINATION lib)
-
 # install headers
 set(installable_headers ${HEADER_LIST_LIBRARY} ${HEADER_LIST_WRAPPER})
 install(FILES ${installable_headers} DESTINATION include)
+
+if(BUILD_SHARED_LIBS)
+  # install libs
+  install(TARGETS tvmdp DESTINATION lib)
+else()
+  # rename target
+  set_target_properties(tvmdp PROPERTIES OUTPUT_NAME "libtvmdp_simple")
+
+  # generate combined library
+  set(LIBTVMDP "libtvmdp.a")
+  add_custom_command(
+    OUTPUT ${LIBTVMDP}
+    COMMAND ${CMAKE_AR} -rcT ${LIBTVMDP} $<TARGET_FILE:tvm::tvm_runtime> $<TARGET_FILE:jansson::jansson> $<TARGET_FILE:tvmdp>
+    DEPENDS tvmdp
+    COMMENT "Generating combined library"
+  )
+
+  add_custom_target(tvmdp_combined ALL
+    DEPENDS ${LIBTVMDP}
+  )
+
+  # install libs - combined library
+  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${LIBTVMDP} DESTINATION lib)
+endif()
