@@ -101,3 +101,12 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/libtvmdpConfig.cmake
   ${CMAKE_CURRENT_BINARY_DIR}/libtvmdpConfigVersion.cmake
   DESTINATION lib/cmake/libtvmdp
 )
+
+# generate pkgconfig
+set(target tvmdp)
+configure_file(${PROJECT_SOURCE_DIR}/config/libtvmdp.pc.in
+  ${CMAKE_CURRENT_BINARY_DIR}/libtvmdp.pc @ONLY)
+
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/libtvmdp.pc
+  DESTINATION lib/pkgconfig
+)
