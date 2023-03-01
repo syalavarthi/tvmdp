@@ -6,15 +6,27 @@ set(HEADER_LIST_LIBRARY
   "${PROJECT_SOURCE_DIR}/include/tvmdp.hpp"
 )
 
+# c wrapper header files list
+set(HEADER_LIST_WRAPPER
+  "${PROJECT_SOURCE_DIR}/include/tvmdp.h"
+)
+
 # library source files list
 set(SOURCE_LIST_LIBRARY
   "${PROJECT_SOURCE_DIR}/src/tvmdp.cpp"
+)
+
+# c wrapper source files list
+set(SOURCE_LIST_WRAPPER
+  "${PROJECT_SOURCE_DIR}/src/tvmdp_c.cpp"
 )
 
 # automatic library - will be static or dynamic based on user setting
 add_library(tvmdp
   ${SOURCE_LIST_LIBRARY}
   ${HEADER_LIST_LIBRARY}
+  ${HEADER_LIST_WRAPPER}
+  ${SOURCE_LIST_WRAPPER}
 )
 
 target_compile_definitions(tvmdp PRIVATE DMLC_USE_LOGGING_LIBRARY="tvm/runtime/logging.h")
@@ -38,12 +50,12 @@ set_property(TARGET tvmdp PROPERTY SOVERSION ${libtvmdp_VERSION_MAJOR})
 source_group(
   TREE "${PROJECT_SOURCE_DIR}/include"
   PREFIX "Header Files"
-  FILES ${HEADER_LIST_LIBRARY}
+  FILES ${HEADER_LIST_LIBRARY} ${HEADER_LIST_WRAPPER}
 )
 
 # install libs
 install(TARGETS tvmdp DESTINATION lib)
 
 # install headers
-set(installable_headers ${HEADER_LIST_LIBRARY})
+set(installable_headers ${HEADER_LIST_LIBRARY} ${HEADER_LIST_WRAPPER})
 install(FILES ${installable_headers} DESTINATION include)
