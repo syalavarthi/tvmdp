@@ -78,3 +78,26 @@ endif()
 
 # documentation
 add_subdirectory(docs)
+
+# cmake package config generation
+include(CMakePackageConfigHelpers)
+install(TARGETS tvmdp_compiler_flags EXPORT libtvmdpTargets)
+
+install(EXPORT libtvmdpTargets
+  NAMESPACE libtvmdp::
+  DESTINATION lib/cmake/libtvmdp
+)
+
+configure_package_config_file(${PROJECT_SOURCE_DIR}/config/Config.cmake.in
+  ${CMAKE_CURRENT_BINARY_DIR}/libtvmdpConfig.cmake
+  INSTALL_DESTINATION lib/cmake/libtvmdp
+)
+
+write_basic_package_version_file(${CMAKE_CURRENT_BINARY_DIR}/libtvmdpConfigVersion.cmake
+  COMPATIBILITY SameMajorVersion
+)
+
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/libtvmdpConfig.cmake
+  ${CMAKE_CURRENT_BINARY_DIR}/libtvmdpConfigVersion.cmake
+  DESTINATION lib/cmake/libtvmdp
+)
