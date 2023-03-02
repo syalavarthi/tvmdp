@@ -9,7 +9,7 @@ project(
   libtvmdp
   VERSION 0.1.0
   DESCRIPTION "TVM Dataplane Library"
-  LANGUAGES CXX)
+  LANGUAGES CXX C)
 
 # set options
 add_library(tvmdp_compiler_flags INTERFACE)
