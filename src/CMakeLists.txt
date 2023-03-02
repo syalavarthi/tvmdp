@@ -33,7 +33,6 @@ target_compile_definitions(tvmdp PRIVATE DMLC_USE_LOGGING_LIBRARY="tvm/runtime/l
 
 # include directories
 target_include_directories(tvmdp PUBLIC ${PROJECT_SOURCE_DIR}/include)
-target_include_directories(tvmdp PUBLIC ${PROJECT_BINARY_DIR}/include)
 
 # link base flags
 target_link_libraries(tvmdp PUBLIC tvmdp_compiler_flags)

@@ -6,7 +6,7 @@
 
 int main() {
 
-  tvmdp::DeployGraphExecutor();
+	tvmdp::tvmdp_hello();
 
-  return 0;
+	return 0;
 }

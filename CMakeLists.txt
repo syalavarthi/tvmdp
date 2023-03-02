@@ -20,7 +20,21 @@ target_compile_features(tvmdp_compiler_flags INTERFACE cxx_std_17)
 # add compiler warning flags
 set(gcc_like_cxx "$<COMPILE_LANG_AND_ID:CXX,Clang,GNU>")
 target_compile_options(tvmdp_compiler_flags INTERFACE
-  "$<${gcc_like_cxx}:$<BUILD_INTERFACE:-Wall;-Wextra;-Wshadow;-Wformat=2;-Wunused>>"
+  "$<${gcc_like_cxx}:$<BUILD_INTERFACE:-Wall;-Wextra;-Wshadow;-Wdeprecated;-Wunused;-Wundef;-Wuninitialized;-Wcast-qual;>>"
+)
+
+target_compile_options(tvmdp_compiler_flags INTERFACE
+  "$<${gcc_like_cxx}:$<BUILD_INTERFACE:-Wmissing-include-dirs;-Wmissing-declarations;-Wpointer-arith;-Wsign-compare>>"
+)
+
+target_compile_options(tvmdp_compiler_flags INTERFACE
+  "$<${gcc_like_cxx}:$<BUILD_INTERFACE:-Wformat=2;-Wformat-truncation=2;-Wformat-overflow=2;-Walloc-zero>>"
+)
+
+# add compiler optimization flags
+set(gcc_like_cxx "$<COMPILE_LANG_AND_ID:CXX,Clang,GNU>")
+target_compile_options(tvmdp_compiler_flags INTERFACE
+  "$<${gcc_like_cxx}:$<BUILD_INTERFACE:-O3;-march=armv8.5-a+sve2+crypto>>"
 )
 
 # ensure -std=c++xx instead of -std=g++xx
