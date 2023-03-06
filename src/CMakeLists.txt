@@ -11,10 +11,16 @@ set(SOURCE_LIST_LIBRARY
   "${PROJECT_SOURCE_DIR}/src/tvmdp.cpp"
 )
 
+# third-party header files list
+set(HEADER_LIST_DLPACK
+  "${PROJECT_SOURCE_DIR}/include/dlpack/dlpack.h"
+)
+
 # automatic library - will be static or dynamic based on user setting
 add_library(tvmdp
   ${SOURCE_LIST_LIBRARY}
   ${HEADER_LIST_LIBRARY}
+  ${HEADER_LIST_DLPACK}
 )
 
 target_compile_definitions(tvmdp PRIVATE DMLC_USE_LOGGING_LIBRARY="tvm/runtime/logging.h")
@@ -37,11 +43,12 @@ set_property(TARGET tvmdp PROPERTY SOVERSION ${tvmdp_VERSION_MAJOR})
 source_group(
   TREE "${PROJECT_SOURCE_DIR}/include"
   PREFIX "Header Files"
-  FILES ${HEADER_LIST_LIBRARY}
+  FILES ${HEADER_LIST_LIBRARY} ${HEADER_LIST_DLPACK}
 )
 
 # install headers
 install(FILES ${HEADER_LIST_LIBRARY} DESTINATION include)
+install(FILES ${HEADER_LIST_DLPACK} DESTINATION include/dlpack)
 
 if(BUILD_SHARED_LIBS)
   # install libs

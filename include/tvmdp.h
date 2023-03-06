@@ -5,6 +5,8 @@
 #ifndef _TVMDP_H_
 #define _TVMDP_H_
 
+#include <dlpack/dlpack.h>
+
 #ifdef __cplusplus
 #define TVMDP_EXPORT_C extern "C"
 
