@@ -2,7 +2,7 @@
  * Copyright (c) 2023 Marvell.
  */
 
-#include <tvmdp.hpp>
+#include <tvmdp.h>
 
 #include <iostream>
 

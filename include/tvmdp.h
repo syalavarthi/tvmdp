@@ -2,23 +2,31 @@
  * Copyright (c) 2023 Marvell.
  */
 
-#ifndef _TVMDP_C_H_
-#define _TVMDP_C_H_
+#ifndef _TVMDP_H_
+#define _TVMDP_H_
 
 #ifdef __cplusplus
-extern "C" {
+#define TVMDP_EXPORT_C extern "C"
+
+/**
+ * TVMDP name space
+ */
+namespace tvmdp
+{
+#else
+#define TVMDP_EXPORT_C
 #endif
 
 /**
- * TVMDP Hello C wrapper
+ * TVMDP Hello World!!!
  *
  * @return
  *   0 on success, < 0 on error
  */
-int tvmdp_hello(void);
+TVMDP_EXPORT_C int tvmdp_hello(void);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* _TVMDP_C_H_ */
+#endif /* _TVMDP_H_ */

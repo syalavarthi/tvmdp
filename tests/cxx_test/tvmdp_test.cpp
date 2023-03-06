@@ -2,9 +2,11 @@
  * Copyright (c) 2023 Marvell.
  */
 
-#include <tvmdp.hpp>
+#include <tvmdp.h>
 
-int main() {
+int
+main()
+{
 
 	tvmdp::tvmdp_hello();
 
