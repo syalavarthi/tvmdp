@@ -126,6 +126,66 @@ struct tvmdp_model_metadata {
  */
 TVMDP_EXPORT_C int tvmdp_hello(void);
 
+/**
+ * Configure and initialize TVMDP library resources
+ *
+ * @param[in] nb_models
+ *   Numbers of models to be supported by TVMDP
+ *
+ * @return
+ *   0 on success, < 0 on error
+ */
+TVMDP_EXPORT_C int tvmdp_configure(uint16_t nb_models);
+
+/**
+ * Release TVMDP resources
+ *
+ * @return
+ *   0 on success, < 0 on error
+ */
+TVMDP_EXPORT_C int tvmdp_close(void);
+
+/**
+ * Load a TVM model
+ *
+ * Allocate TVMDP library internal resources and handles for the model.
+ *
+ * @param[in] model_id
+ *   Model ID assigned by dataplane library
+ * @param[in] model_object
+ *   Model object structure pointer
+ *
+ * @return
+ *   0 on success, < 0 on error
+ */
+TVMDP_EXPORT_C int tvmdp_model_load(uint16_t model_id, void *model_object);
+
+/**
+ * Unload a TVM model
+ *
+ * Release resources allocated by library for a model.
+ *
+ * @param[in] model_id
+ *   Model ID assigned by dataplane library
+ *
+ * @return
+ *   0 on success, < 0 on error
+ */
+TVMDP_EXPORT_C int tvmdp_model_unload(uint16_t model_id);
+
+/**
+ * Get metadata information of the model
+ *
+ * @param[in] model_id
+ *   Model ID assigned by dataplane library
+ * @param[out] metadata_addr
+ *   Pointer to model metadata structure
+ *
+ * @return
+ *   0 on success, < 0 on error
+ */
+TVMDP_EXPORT_C int tvmdp_model_metadata_get(uint16_t model_id, void *metadata_addr);
+
 #ifdef __cplusplus
 }
 #endif
