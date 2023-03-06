@@ -2,8 +2,8 @@
  * Copyright (c) 2023 Marvell.
  */
 
-#ifndef _LIBTVMDP_CXX_H_
-#define _LIBTVMDP_CXX_H_
+#ifndef _TVMDP_CXX_H_
+#define _TVMDP_CXX_H_
 
 /**
  * TVMDP name space
@@ -21,4 +21,4 @@ int tvmdp_hello(void);
 
 } // namespace tvmdp
 
-#endif /* _LIBTVMDP_CXX_H_ */
+#endif /* _TVMDP_CXX_H_ */

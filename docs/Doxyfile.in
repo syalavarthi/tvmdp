@@ -3,7 +3,7 @@
 
 PROJECT_NAME           = "@CMAKE_PROJECT_NAME@"
 
-PROJECT_NUMBER         = @libtvmdp_VERSION_MAJOR@.@libtvmdp_VERSION_MINOR@.@libtvmdp_VERSION_PATCH@
+PROJECT_NUMBER         = @tvmdpRSION_MAJOR@.@tvmdp_VERSION_MINOR@.@tvmdp_VERSION_PATCH@
 
 STRIP_FROM_PATH        = @PROJECT_SOURCE_DIR@ \
                          @PROJECT_BINARY_DIR@

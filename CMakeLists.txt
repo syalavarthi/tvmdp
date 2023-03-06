@@ -6,7 +6,7 @@ cmake_minimum_required(VERSION 3.25)
 
 # project name and useful settings
 project(
-  libtvmdp
+  tvmdp
   VERSION 0.1.0
   DESCRIPTION "TVM Dataplane Library"
   LANGUAGES CXX C)
@@ -95,32 +95,32 @@ add_subdirectory(docs)
 
 # cmake package config generation
 include(CMakePackageConfigHelpers)
-install(TARGETS tvmdp_compiler_flags EXPORT libtvmdpTargets)
+install(TARGETS tvmdp_compiler_flags EXPORT tvmdpTargets)
 
-install(EXPORT libtvmdpTargets
-  NAMESPACE libtvmdp::
-  DESTINATION lib/cmake/libtvmdp
+install(EXPORT tvmdpTargets
+  NAMESPACE tvmdp::
+  DESTINATION lib/cmake/tvmdp
 )
 
 configure_package_config_file(${PROJECT_SOURCE_DIR}/config/Config.cmake.in
-  ${CMAKE_CURRENT_BINARY_DIR}/libtvmdpConfig.cmake
-  INSTALL_DESTINATION lib/cmake/libtvmdp
+  ${CMAKE_CURRENT_BINARY_DIR}/tvmdpConfig.cmake
+  INSTALL_DESTINATION lib/cmake/tvmdp
 )
 
-write_basic_package_version_file(${CMAKE_CURRENT_BINARY_DIR}/libtvmdpConfigVersion.cmake
+write_basic_package_version_file(${CMAKE_CURRENT_BINARY_DIR}/tvmdpConfigVersion.cmake
   COMPATIBILITY SameMajorVersion
 )
 
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/libtvmdpConfig.cmake
-  ${CMAKE_CURRENT_BINARY_DIR}/libtvmdpConfigVersion.cmake
-  DESTINATION lib/cmake/libtvmdp
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/tvmdpConfig.cmake
+  ${CMAKE_CURRENT_BINARY_DIR}/tvmdpConfigVersion.cmake
+  DESTINATION lib/cmake/tvmdp
 )
 
 # generate pkgconfig
 set(target tvmdp)
-configure_file(${PROJECT_SOURCE_DIR}/config/libtvmdp.pc.in
-  ${CMAKE_CURRENT_BINARY_DIR}/libtvmdp.pc @ONLY)
+configure_file(${PROJECT_SOURCE_DIR}/config/tvmdp.pc.in
+  ${CMAKE_CURRENT_BINARY_DIR}/tvmdp.pc @ONLY)
 
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/libtvmdp.pc
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/tvmdp.pc
   DESTINATION lib/pkgconfig
 )

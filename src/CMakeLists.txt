@@ -37,13 +37,13 @@ target_include_directories(tvmdp PUBLIC ${PROJECT_SOURCE_DIR}/include)
 # link base flags
 target_link_libraries(tvmdp PUBLIC tvmdp_compiler_flags)
 
-# state that libtvmdp need PIC when the default is shared libraries
+# state that tvmdpPIC when the default is shared libraries
 set_target_properties(tvmdp PROPERTIES POSITION_INDEPENDENT_CODE ${BUILD_SHARED_LIBS})
 
 # additional properties
 set_property(TARGET tvmdp PROPERTY POSITION_INDEPENDENT_CODE ON)
-set_property(TARGET tvmdp PROPERTY VERSION ${libtvmdp_VERSION_MAJOR}.${libtvmdp_VERSION_MINOR}.${libtvmdp_VERSION_PATCH})
-set_property(TARGET tvmdp PROPERTY SOVERSION ${libtvmdp_VERSION_MAJOR})
+set_property(TARGET tvmdp PROPERTY VERSION ${tvmdp_VERSION_MAJOR}.${tvmdp_VERSION_MINOR}.${tvmdp_VERSION_PATCH})
+set_property(TARGET tvmdp PROPERTY SOVERSION ${tvmdp_VERSION_MAJOR})
 
 # IDEs should put the headers in a nice place
 source_group(
@@ -61,7 +61,7 @@ if(BUILD_SHARED_LIBS)
   install(TARGETS tvmdp DESTINATION lib)
 else()
   # rename target
-  set_target_properties(tvmdp PROPERTIES OUTPUT_NAME "libtvmdp_simple")
+  set_target_properties(tvmdp PROPERTIES OUTPUT_NAME "libtvmdp_base")
 
   # generate combined library
   set(LIBTVMDP "libtvmdp.a")

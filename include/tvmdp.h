@@ -2,8 +2,8 @@
  * Copyright (c) 2023 Marvell.
  */
 
-#ifndef _LIBTVMDP_C_H_
-#define _LIBTVMDP_C_H_
+#ifndef _TVMDP_C_H_
+#define _TVMDP_C_H_
 
 #ifdef __cplusplus
 extern "C" {
@@ -21,4 +21,4 @@ int tvmdp_hello(void);
 }
 #endif
 
-#endif /* _LIBTVMDP_C_H_ */
+#endif /* _TVMDP_C_H_ */
