@@ -10,14 +10,113 @@
 #ifdef __cplusplus
 #define TVMDP_EXPORT_C extern "C"
 
+#include <cstddef>
+#include <cstdint>
+
 /**
  * TVMDP name space
  */
 namespace tvmdp
 {
+
 #else
 #define TVMDP_EXPORT_C
+
+#include <stddef.h>
+#include <stdint.h>
 #endif
+
+/* Name string length */
+#define TVMDP_NAME_STRLEN 32
+
+/* Number of input/outputs per model */
+#define TVMDP_INPUT_OUTPUT_MAX 32
+
+/* Maximum number of dimensions of tensor / shape */
+#define TVMDP_SHAPE_DIM_MAX 8
+
+/* TVM object / artifact info structure */
+struct tvmdp_object {
+	/* Name */
+	char name[TVMDP_NAME_STRLEN];
+
+	/* Size */
+	uint32_t size;
+
+	/* Offset in tar file */
+	uint32_t offset;
+
+	/* Address */
+	uint8_t *addr;
+};
+
+/* TVM Model objects */
+struct tvmdp_model_object {
+	/* Shared libary object */
+	struct tvmdp_object so;
+
+	/* JSON file object */
+	struct tvmdp_object json;
+
+	/* Params binary object */
+	struct tvmdp_object params;
+};
+
+/* TVM metadata: Model section */
+struct tvmdp_metadata_model_section {
+	/* Model name */
+	uint8_t name[TVMDP_NAME_STRLEN];
+
+	/* Model version string */
+	uint8_t version[TVMDP_NAME_STRLEN];
+
+	/* Number of input tensors */
+	int32_t num_input;
+
+	/* Number of output tensors */
+	int32_t num_output;
+};
+
+/* TVM metadata: I/O section */
+struct tvmdp_metadata_io_section {
+	/* Name of IO data */
+	char name[TVMDP_NAME_STRLEN];
+
+	/* IO format */
+	uint8_t format;
+
+	/* Number of dimensions */
+	int ndim;
+
+	/* IO shape */
+	int64_t shape[TVMDP_SHAPE_DIM_MAX];
+
+	/* Type of incoming / outgoing data */
+	DLDataType datatype;
+
+	/* Type of data required by model */
+	DLDataType model_datatype;
+
+	/* float_32 scale value
+	 * quantized = non-quantized * scale
+	 */
+	float scale;
+
+	/* TVM device */
+	DLDevice device;
+};
+
+/* TVM ML Model metadata */
+struct tvmdp_model_metadata {
+	/* Model section */
+	struct tvmdp_metadata_model_section model;
+
+	/* Input section */
+	struct tvmdp_metadata_io_section input[TVMDP_INPUT_OUTPUT_MAX];
+
+	/* Output section */
+	struct tvmdp_metadata_io_section output[TVMDP_INPUT_OUTPUT_MAX];
+};
 
 /**
  * TVMDP Hello World!!!
