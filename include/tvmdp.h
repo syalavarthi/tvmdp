@@ -186,6 +186,26 @@ TVMDP_EXPORT_C int tvmdp_model_unload(uint16_t model_id);
  */
 TVMDP_EXPORT_C int tvmdp_model_metadata_get(uint16_t model_id, void *metadata_addr);
 
+/**
+ * Run inference for a model
+ *
+ * @param[in] model_id
+ *   Model ID assigned by dataplane library
+ * @param[in] num_input
+ *   Number of inputs
+ * @param[in] input_tensor
+ *   Pointer to input tensor
+ * @param[in] num_output
+ *   Number of outputs
+ * @param[in] output_tensor
+ *   Pointer to output tensor
+ *
+ * @return
+ *   0 on success, < 0 on error
+ */
+TVMDP_EXPORT_C int tvmdp_model_run(uint16_t model_id, int32_t num_input, DLTensor *input_tensor,
+				   int32_t num_output, DLTensor *output_tensor);
+
 #ifdef __cplusplus
 }
 #endif

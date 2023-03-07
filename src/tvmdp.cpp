@@ -84,4 +84,17 @@ tvmdp_model_metadata_get(uint16_t model_id, void *metadata_addr)
 	return 0;
 }
 
+int
+tvmdp_model_run(uint16_t model_id, int32_t num_input, DLTensor *input_tensor, int32_t num_output,
+		DLTensor *output_tensor)
+{
+	(void)model_id;
+	(void)num_input;
+	(void)input_tensor;
+	(void)num_output;
+	(void)output_tensor;
+
+	return 0;
+}
+
 } // namespace tvmdp
