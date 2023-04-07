@@ -204,12 +204,14 @@ TVMDP_EXPORT_C int tvmdp_model_metadata_get(uint16_t model_id, void *metadata_ad
  *   Number of outputs
  * @param[in] output_tensor
  *   Pointer to output tensor
- *
- * @return
- *   0 on success, < 0 on error
+ * @param[in] result
+ *   Pointer to result structure
+ * @param[in] status
+ *   Pointer to job status
  */
-TVMDP_EXPORT_C int tvmdp_model_run(uint16_t model_id, int32_t num_input, DLTensor *input_tensor,
-				   int32_t num_output, DLTensor *output_tensor);
+TVMDP_EXPORT_C void tvmdp_model_run(uint16_t model_id, int32_t num_input, DLTensor *input_tensor,
+				    int32_t num_output, DLTensor *output_tensor, void *result,
+				    uint64_t *status);
 
 #ifdef __cplusplus
 }

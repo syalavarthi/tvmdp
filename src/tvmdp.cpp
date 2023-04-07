@@ -50,6 +50,34 @@ struct tvmdp_data {
 	tvmdp_clock_cb_t clock;
 } data;
 
+/* Inference stats
+ *
+ * Units of start and end are dependent on the tvmdp_clock_cb_t.
+ */
+struct tvmdp_ml_stats {
+	/* Start */
+	uint64_t start;
+
+	/* Start */
+	uint64_t end;
+};
+
+/* Inference Result structure
+ *
+ * Structure to store inference results.
+ * A structure with same fields is defined in dataplane library / driver.
+ */
+struct tvmdp_ml_result {
+	/* Job error code */
+	uint64_t error_code;
+
+	/* Inference stats */
+	struct tvmdp_ml_stats stats;
+
+	/* User context pointer */
+	void *user_ptr;
+};
+
 int
 tvmdp_hello(void)
 {
@@ -338,16 +366,18 @@ tvmdp_model_metadata_get(uint16_t model_id, void *metadata_addr)
 	return 0;
 }
 
-int
+void
 tvmdp_model_run(uint16_t model_id, int32_t num_input, DLTensor *input_tensor, int32_t num_output,
-		DLTensor *output_tensor)
+		DLTensor *output_tensor, void *result, uint64_t *status)
 {
+	struct tvmdp_ml_result *ml_result;
 	tvm::runtime::Module *module;
-
 	int i = 0;
 
 	module = data.model[model_id].module;
+	ml_result = (struct tvmdp_ml_result *)result;
 
+	ml_result->stats.start = data.clock();
 	for (i = 0; i < num_input; i++)
 		module->GetFunction("set_input_zero_copy")(i, &input_tensor[i]);
 
@@ -355,8 +385,9 @@ tvmdp_model_run(uint16_t model_id, int32_t num_input, DLTensor *input_tensor, in
 		module->GetFunction("set_output_zero_copy")(i, &output_tensor[i]);
 
 	module->GetFunction("run")();
-
-	return 0;
+	ml_result->error_code = 0x0;
+	ml_result->stats.end = data.clock();
+	*(volatile uint64_t *)status = 0x1;
 }
 
 } // namespace tvmdp
