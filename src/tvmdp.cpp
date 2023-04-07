@@ -45,6 +45,9 @@ struct tvmdp_data {
 
 	/* TVM Device */
 	DLDevice device;
+
+	/* Clock callback function */
+	tvmdp_clock_cb_t clock;
 } data;
 
 int
@@ -56,7 +59,7 @@ tvmdp_hello(void)
 }
 
 int
-tvmdp_configure(uint16_t nb_models)
+tvmdp_configure(uint16_t nb_models, tvmdp_clock_cb_t clock)
 {
 	/* Check for configuration status */
 	if (data.model != nullptr) {
@@ -78,6 +81,7 @@ tvmdp_configure(uint16_t nb_models)
 		return -ENOMEM;
 	}
 	data.nb_models = nb_models;
+	data.clock = clock;
 
 	/* Reset memory */
 	memset(data.model, 0, sizeof(struct tvmdp_model_data) * nb_models);

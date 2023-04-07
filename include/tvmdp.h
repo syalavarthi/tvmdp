@@ -118,6 +118,9 @@ struct tvmdp_model_metadata {
 	struct tvmdp_metadata_io_section output[TVMDP_INPUT_OUTPUT_MAX];
 };
 
+/* Callback for clock function */
+typedef uint64_t (*tvmdp_clock_cb_t)(void);
+
 /**
  * TVMDP Hello World!!!
  *
@@ -131,11 +134,13 @@ TVMDP_EXPORT_C int tvmdp_hello(void);
  *
  * @param[in] nb_models
  *   Numbers of models to be supported by TVMDP
+ * @param[in] clock
+ *   Callback function for clock
  *
  * @return
  *   0 on success, < 0 on error
  */
-TVMDP_EXPORT_C int tvmdp_configure(uint16_t nb_models);
+TVMDP_EXPORT_C int tvmdp_configure(uint16_t nb_models, tvmdp_clock_cb_t clock);
 
 /**
  * Release TVMDP resources
