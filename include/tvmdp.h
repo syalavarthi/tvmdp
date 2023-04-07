@@ -65,7 +65,7 @@ struct tvmdp_model_object {
 /* TVM metadata: Model section */
 struct tvmdp_metadata_model_section {
 	/* Model name */
-	uint8_t name[TVMDP_NAME_STRLEN];
+	char name[TVMDP_NAME_STRLEN];
 
 	/* Model version string */
 	uint8_t version[TVMDP_NAME_STRLEN];

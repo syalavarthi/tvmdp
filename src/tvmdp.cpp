@@ -101,7 +101,7 @@ tvmdp_close(void)
 
 	/* Check for active models */
 	for (i = 0; i < data.nb_models; i++) {
-		if (data.model[i].module->defined()) {
+		if (data.model[i].module != NULL) {
 			std::cerr << "Model still in use, model_id = " << i << std::endl;
 			return -EINVAL;
 		}
@@ -123,7 +123,6 @@ tvmdp_model_load(uint16_t model_id, void *model_object)
 	tvm::runtime::Module module_so;
 	tvm::runtime::Module module_ge;
 
-	int device_type = kDLCPU;
 	char str[PATH_MAX];
 	int fd;
 
@@ -134,7 +133,7 @@ tvmdp_model_load(uint16_t model_id, void *model_object)
 	}
 
 	/* Check if model is loaded */
-	if (data.model[model_id].module->defined()) {
+	if (data.model[model_id].module != NULL) {
 		std::cerr << "Model is already loaded, model_id = " << model_id << std::endl;
 		return -EINVAL;
 	}
@@ -165,12 +164,12 @@ tvmdp_model_load(uint16_t model_id, void *model_object)
 
 	/* Loading *.so file */
 	snprintf(str, PATH_MAX, ML_MODEL_SHMFD_PATH, getpid(), fd);
-	std::cout << "fd path: " << str << std::endl;
 	module_so = tvm::runtime::Module::LoadFromFile(str, "so");
 
 	/* Calling Graph executor */
 	module_ge = (*tvm::runtime::Registry::Get("tvm.graph_executor.create"))(
-		object->json.addr, module_so, device_type, data.device.device_id);
+		(char *)object->json.addr, module_so, (int)data.device.device_type,
+		data.device.device_id);
 
 	data.model[model_id].module = new tvm::runtime::Module(module_ge);
 
@@ -192,8 +191,8 @@ tvmdp_model_unload(uint16_t model_id)
 
 	/* Check if model is loaded */
 	if (data.model[model_id].module == NULL) {
-		std::cout << "Model is not loaded, model_id = " << model_id << std::endl;
-		return 0;
+		std::cerr << "Model is not loaded, model_id = " << model_id << std::endl;
+		return -EINVAL;
 	}
 
 	/* Delete module */
@@ -235,17 +234,12 @@ tvmdp_model_metadata_get(uint16_t model_id, void *metadata_addr)
 
 	/* Check if model is loaded */
 	if (data.model[model_id].module == NULL) {
-		std::cout << "Model is not loaded, model_id = " << model_id << std::endl;
-		return 0;
+		std::cerr << "Model is not loaded, model_id = " << model_id << std::endl;
+		return -EINVAL;
 	}
 
 	object = data.model[model_id].object;
 	module = data.model[model_id].module;
-
-	if (!module->defined()) {
-		std::cout << "TVMDP Model Load either failed or not called" << std::endl;
-		return 0;
-	}
 
 	/* Load JSON */
 	json_parsed = json_loadb((const char *)object.json.addr, object.json.size, 0, &json_error);
@@ -288,17 +282,15 @@ tvmdp_model_metadata_get(uint16_t model_id, void *metadata_addr)
 				strcpy(metadata->input[metadata->model.num_input].name,
 				       json_string_value(json_name));
 				metadata->model.num_input++;
-				std::cout << "Input name: %s" << json_string_value(json_name)
-					  << std::endl;
 			}
 		}
 	}
 
-	std::cout << "Number of inputs: " << metadata->model.num_input << std::endl;
-
 	/* Get number of outputs */
 	metadata->model.num_output = module->GetFunction("get_num_outputs")();
-	std::cout << "Number of outputs: " << metadata->model.num_output << std::endl;
+
+	/* Set model name */
+	snprintf(metadata->model.name, TVMDP_NAME_STRLEN, "%s_%u", "Model", model_id);
 
 	/* Set Model datatype */
 	dtype = DLDataType{kDLFloat, 32, 1};
