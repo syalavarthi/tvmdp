@@ -121,6 +121,27 @@ struct tvmdp_model_metadata {
 /* Callback for clock function */
 typedef uint64_t (*tvmdp_clock_cb_t)(void);
 
+/** TVMDP Op structure */
+struct tvmdp_ml_op {
+	/** Number of inputs */
+	int32_t num_input;
+
+	/** Input tensor */
+	DLTensor *input_tensor;
+
+	/** Number of outputs */
+	int32_t num_output;
+
+	/** Output tensor */
+	DLTensor *output_tensor;
+
+	/** Pointer to result structure */
+	void *result;
+
+	/** Status / poll pointer */
+	volatile uint64_t *status;
+};
+
 /**
  * TVMDP Hello World!!!
  *
@@ -196,22 +217,13 @@ TVMDP_EXPORT_C int tvmdp_model_metadata_get(uint16_t model_id, void *metadata_ad
  *
  * @param[in] model_id
  *   Model ID assigned by dataplane library
- * @param[in] num_input
- *   Number of inputs
- * @param[in] input_tensor
- *   Pointer to input tensor
- * @param[in] num_output
- *   Number of outputs
- * @param[in] output_tensor
- *   Pointer to output tensor
- * @param[in] result
- *   Pointer to result structure
- * @param[in] status
- *   Pointer to job status
+ * @param[in] op
+ *   TVMDP Op handle
+ *
+ * @return
+ *   0 on success, < 0 on error
  */
-TVMDP_EXPORT_C void tvmdp_model_run(uint16_t model_id, int32_t num_input, DLTensor *input_tensor,
-				    int32_t num_output, DLTensor *output_tensor, void *result,
-				    uint64_t *status);
+TVMDP_EXPORT_C void tvmdp_model_run(uint16_t model_id, struct tvmdp_ml_op *op);
 
 #ifdef __cplusplus
 }

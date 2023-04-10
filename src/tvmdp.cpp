@@ -367,27 +367,26 @@ tvmdp_model_metadata_get(uint16_t model_id, void *metadata_addr)
 }
 
 void
-tvmdp_model_run(uint16_t model_id, int32_t num_input, DLTensor *input_tensor, int32_t num_output,
-		DLTensor *output_tensor, void *result, uint64_t *status)
+tvmdp_model_run(uint16_t model_id, struct tvmdp_ml_op *op)
 {
 	struct tvmdp_ml_result *ml_result;
 	tvm::runtime::Module *module;
 	int i = 0;
 
 	module = data.model[model_id].module;
-	ml_result = (struct tvmdp_ml_result *)result;
+	ml_result = (struct tvmdp_ml_result *)op->result;
 
 	ml_result->stats.start = data.clock();
-	for (i = 0; i < num_input; i++)
-		module->GetFunction("set_input_zero_copy")(i, &input_tensor[i]);
+	for (i = 0; i < op->num_input; i++)
+		module->GetFunction("set_input_zero_copy")(i, &op->input_tensor[i]);
 
-	for (i = 0; i < num_output; i++)
-		module->GetFunction("set_output_zero_copy")(i, &output_tensor[i]);
+	for (i = 0; i < op->num_output; i++)
+		module->GetFunction("set_output_zero_copy")(i, &op->output_tensor[i]);
 
 	module->GetFunction("run")();
 	ml_result->error_code = 0x0;
 	ml_result->stats.end = data.clock();
-	*(volatile uint64_t *)status = 0x1;
+	*(volatile uint64_t *)op->status = 0x1;
 }
 
 } // namespace tvmdp
