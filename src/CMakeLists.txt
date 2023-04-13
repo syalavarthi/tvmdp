@@ -61,7 +61,7 @@ else()
   set(LIBTVMDP "libtvmdp.a")
   add_custom_command(
     OUTPUT ${LIBTVMDP}
-    COMMAND ${CMAKE_AR} -rcT ${LIBTVMDP} $<TARGET_FILE:tvm::tvm_runtime> $<TARGET_FILE:jansson::jansson> $<TARGET_FILE:tvmdp>
+    COMMAND ${CMAKE_AR} -rcT ${LIBTVMDP} $<TARGET_FILE:tvm::tvm_runtime> $<TARGET_FILE:tvmdp>
     DEPENDS tvmdp
     COMMENT "Generating combined library"
   )
