@@ -376,9 +376,54 @@ tvmdp_model_metadata_get(uint16_t model_id, void *metadata_addr)
 int
 tvmdp_model_metadata_get_stage1(void *buffer, size_t size, void *metadata_addr)
 {
-	(void)buffer;
-	(void)size;
-	(void)metadata_addr;
+	struct tvmdp_model_metadata *metadata = (struct tvmdp_model_metadata *)metadata_addr;
+
+	json_error_t json_error;
+	json_t *json_parsed;
+	json_t *json_nodes;
+	json_t *json_array;
+	json_t *json_obj;
+
+	int i;
+
+	/* Load JSON */
+	json_parsed = json_loadb((const char *)buffer, size, 0, &json_error);
+	if (!json_parsed) {
+		std::cerr << "error: on line" << json_error.line << json_error.text;
+		return -1;
+	}
+
+	json_nodes = json_object_get(json_parsed, "nodes");
+	if (json_nodes == NULL) {
+		std::cerr << "Failed parsing JSON nodes" << std::endl;
+		return -errno;
+	}
+
+	for (i = 0; i < ((int)json_array_size(json_nodes)); i++) {
+		json_array = json_array_get(json_nodes, i);
+		json_obj = json_object_get(json_array, "op");
+
+		if (strcmp(json_string_value(json_obj), "tvm_op") == 0) {
+			/* Get the Layer Name */
+			json_obj = json_object_get(json_array, "name");
+			strcpy(metadata->model.layer[metadata->model.nb_layers].name,
+			       json_string_value(json_obj));
+
+			/* capture layer type */
+			json_obj = json_object_get(json_array, "attrs");
+			json_obj = json_object_get(json_obj, "Compiler");
+			if (json_obj == NULL) {
+				/* For LLVM models */
+				strcpy(metadata->model.layer[metadata->model.nb_layers].type,
+				       "LLVM");
+			} else {
+				strcpy(metadata->model.layer[metadata->model.nb_layers].type,
+				       json_string_value(json_obj));
+			}
+
+			metadata->model.nb_layers++;
+		}
+	}
 
 	return 0;
 }
