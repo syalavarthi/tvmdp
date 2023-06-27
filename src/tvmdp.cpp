@@ -204,6 +204,10 @@ tvmdp_model_load(void *device, uint16_t model_id, void *model_object,
 	snprintf(str, PATH_MAX, ML_MODEL_SHMFD_PATH, getpid(), fd);
 	module_so = tvm::runtime::Module::LoadFromFile(str, "so");
 
+	/* Calling the register callback apis */
+	if (tvmrt_glow_cb)
+		module_so.GetFunction("register_cb")(tvmrt_glow_cb, device, model_id);
+
 	/* Calling Graph executor */
 	module_ge = (*tvm::runtime::Registry::Get("tvm.graph_executor.create"))(
 		(char *)object->json.addr, module_so, (int)data.device.device_type,
