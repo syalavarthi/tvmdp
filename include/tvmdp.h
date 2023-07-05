@@ -141,10 +141,28 @@ typedef int (*tvmrt_glow_layer_load_cb)(void *device, uint16_t model_id, const c
 					uint8_t *buffer, size_t size, uint16_t *index);
 typedef int (*tvmrt_glow_layer_unload_cb)(void *device, uint16_t model_id, const char *layer_name);
 
+typedef int (*tvmrt_io_alloc_cb)(void *device, uint16_t model_id, const char *layer_name,
+				 uint64_t **input_qbuffer, uint64_t **output_qbuffer);
+typedef int (*tvmrt_io_free_cb)(void *device, uint16_t model_id, const char *layer_name);
+
+typedef int (*tvmrt_malloc_cb)(const char *name, size_t size, uint32_t align, void **addr);
+typedef int (*tvmrt_free_cb)(const char *name);
+
+typedef int (*tvmrt_quantize_cb)(void *device, uint16_t model_id, const char *layer_name,
+				 const DLTensor **deq_tensor, void *qbuffer);
+typedef int (*tvmrt_dequantize_cb)(void *device, uint16_t model_id, const char *layer_name,
+				   void *qbuffer, const DLTensor **deq_tensor);
+
 /* Call back functions structure */
 struct tvmrt_glow_callback {
 	tvmrt_glow_layer_load_cb tvmrt_glow_layer_load;
 	tvmrt_glow_layer_unload_cb tvmrt_glow_layer_unload;
+	tvmrt_io_alloc_cb tvmrt_io_alloc;
+	tvmrt_io_free_cb tvmrt_io_free;
+	tvmrt_malloc_cb tvmrt_malloc;
+	tvmrt_free_cb tvmrt_free;
+	tvmrt_quantize_cb tvmrt_quantize;
+	tvmrt_dequantize_cb tvmrt_dequantize;
 };
 
 /* Callback for clock function */
