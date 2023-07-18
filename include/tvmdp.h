@@ -152,6 +152,8 @@ typedef int (*tvmrt_quantize_cb)(void *device, uint16_t model_id, const char *la
 				 const DLTensor **deq_tensor, void *qbuffer);
 typedef int (*tvmrt_dequantize_cb)(void *device, uint16_t model_id, const char *layer_name,
 				   void *qbuffer, const DLTensor **deq_tensor);
+typedef int (*tvmrt_inference_cb)(void *device, uint16_t index, void *input, void *output,
+				  uint16_t nb_batches);
 
 /* Call back functions structure */
 struct tvmrt_glow_callback {
@@ -163,6 +165,7 @@ struct tvmrt_glow_callback {
 	tvmrt_free_cb tvmrt_free;
 	tvmrt_quantize_cb tvmrt_quantize;
 	tvmrt_dequantize_cb tvmrt_dequantize;
+	tvmrt_inference_cb tvmrt_inference;
 };
 
 /* Callback for clock function */
