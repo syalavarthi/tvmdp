@@ -23,6 +23,9 @@ add_library(tvmdp
   ${HEADER_LIST_DLPACK}
 )
 
+set_target_properties(tvmdp PROPERTIES VERSION ${PROJECT_VERSION})
+set_target_properties(tvmdp PROPERTIES SOVERSION 0)
+
 target_compile_definitions(tvmdp PRIVATE DMLC_USE_LOGGING_LIBRARY="tvm/runtime/logging.h")
 
 # include directories
@@ -50,26 +53,5 @@ source_group(
 install(FILES ${HEADER_LIST_LIBRARY} DESTINATION include)
 install(FILES ${HEADER_LIST_DLPACK} DESTINATION include/dlpack)
 
-if(BUILD_SHARED_LIBS)
-  # install libs
-  install(TARGETS tvmdp DESTINATION lib)
-else()
-  # rename target
-  set_target_properties(tvmdp PROPERTIES OUTPUT_NAME "libtvmdp_base")
-
-  # generate combined library
-  set(LIBTVMDP "libtvmdp.a")
-  add_custom_command(
-    OUTPUT ${LIBTVMDP}
-    COMMAND ${CMAKE_AR} -rcT ${LIBTVMDP} $<TARGET_FILE:tvm::tvm_runtime> $<TARGET_FILE:tvmdp>
-    DEPENDS tvmdp
-    COMMENT "Generating combined library"
-  )
-
-  add_custom_target(tvmdp_combined ALL
-    DEPENDS ${LIBTVMDP}
-  )
-
-  # install libs - combined library
-  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${LIBTVMDP} DESTINATION lib)
-endif()
+# install libs
+install(TARGETS tvmdp DESTINATION lib)
