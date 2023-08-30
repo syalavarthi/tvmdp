@@ -56,12 +56,16 @@ find_package(dmlc REQUIRED)
 find_package(dlpack REQUIRED)
 
 # find jansson library and headers, update flags
-find_package(jansson REQUIRED)
+find_package(jansson QUIET)
 
 if(jansson_FOUND)
   target_link_libraries(tvmdp_compiler_flags INTERFACE jansson::jansson)
 else()
-  message(STATUS "Jansson not found, Abort")
+  include(FindPkgConfig)
+  set(PKG_CONFIG_USE_CMAKE_PREFIX_PATH ON)
+  pkg_search_module(JANSSON REQUIRED jansson)
+  include_directories(${JANSSON_INCLUDE_DIRS})
+  target_link_libraries(tvmdp_compiler_flags INTERFACE ${JANSSON_LDFLAGS})
 endif()
 
 # find tvm library and runtime headers, update flags
