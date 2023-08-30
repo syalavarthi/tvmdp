@@ -2,7 +2,7 @@
 # Copyright (c) 2023 Marvell.
 
 # set CMake minimum version
-cmake_minimum_required(VERSION 3.25)
+cmake_minimum_required(VERSION 3.22)
 
 # project name and useful settings
 project(
@@ -74,8 +74,6 @@ find_package(tvm REQUIRED)
 if(tvm_FOUND)
   target_link_libraries(tvmdp_compiler_flags INTERFACE
     -Wl,--whole-archive,$<TARGET_FILE:tvm::tvm_runtime>,--no-whole-archive)
-else()
-  message(STATUS "TVM not found, Abort")
 endif()
 
 # find Pthreads library
