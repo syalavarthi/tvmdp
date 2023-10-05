@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: BSD-3-Clause
+# Copyright (c) 2023 Marvell.
+
 @PACKAGE_INIT@
 
 include ( "${CMAKE_CURRENT_LIST_DIR}/tvmdpTargets.cmake" )
