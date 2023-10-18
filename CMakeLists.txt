@@ -34,7 +34,7 @@ target_compile_options(tvmdp_compiler_flags INTERFACE
 # add compiler optimization flags
 set(gcc_like_cxx "$<COMPILE_LANG_AND_ID:CXX,Clang,GNU>")
 target_compile_options(tvmdp_compiler_flags INTERFACE
-  "$<${gcc_like_cxx}:$<BUILD_INTERFACE:-O3;-march=armv8.5-a+sve2+crypto>>"
+  "$<${gcc_like_cxx}:$<BUILD_INTERFACE:-O3>>"
 )
 
 # ensure -std=c++xx instead of -std=g++xx
@@ -49,11 +49,24 @@ set(CMAKE_SKIP_BUILD_RPATH TRUE)
 # enable testing
 include(CTest)
 
+find_package(OpenMP)
+if (OPENMP_FOUND)
+    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
+    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+    set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
+endif()
+
 # find dmlc headers
 find_package(dmlc REQUIRED)
+if(dmlc_FOUND)
+  target_link_libraries(tvmdp_compiler_flags INTERFACE dmlc::dmlc)
+endif()
 
 # find dlpack headers
 find_package(dlpack REQUIRED)
+if(dlpack_FOUND)
+  target_link_libraries(tvmdp_compiler_flags INTERFACE dlpack::dlpack)
+endif()
 
 # find jansson library and headers, update flags
 find_package(jansson QUIET)
