@@ -11,4 +11,4 @@ Description: @CMAKE_PROJECT_DESCRIPTION@
 Version: @PROJECT_VERSION@
 Cflags: -I"${includedir}"
 Libs: -L"${libdir}" -l@target@
-Libs.private: -Wl,--whole-archive -ltvm_runtime -Wl,--no-whole-archive --lstdc++
+Libs.private: -Wl,--whole-archive -ltvm_runtime -Wl,--no-whole-archive -ljansson -lstdc++

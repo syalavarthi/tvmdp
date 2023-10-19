@@ -3,4 +3,5 @@
 
 # Documentation for TVM Dataplane Library {#mainpage}
 
-This is the documentation for TVM DPDK library.
+TVMDP is a wrapper library to provide simplified C interface to
+TVM runtime's C++ APIs.

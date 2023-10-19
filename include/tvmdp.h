@@ -172,14 +172,6 @@ struct tvmrt_glow_callback {
 typedef uint64_t (*tvmdp_clock_cb_t)(void);
 
 /**
- * TVMDP Hello World!!!
- *
- * @return
- *   0 on success, < 0 on error
- */
-TVMDP_EXPORT_C int tvmdp_hello(void);
-
-/**
  * Configure and initialize TVMDP library resources
  *
  * @param[in] nb_models

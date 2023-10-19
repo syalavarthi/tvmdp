@@ -1,141 +1,118 @@
 # SPDX-License-Identifier: BSD-3-Clause
 # Copyright (c) 2023 Marvell.
 
-# set CMake minimum version
-cmake_minimum_required(VERSION 3.22)
+# set cmake minimum version
+cmake_minimum_required(VERSION 3.24)
 
 # project name and useful settings
 project(
   tvmdp
-  VERSION 0.1.0
+  VERSION 1.0.0
   DESCRIPTION "TVM Dataplane Library"
   LANGUAGES CXX C)
 
-# set options
-add_library(tvmdp_compiler_flags INTERFACE)
-
-# set compile features
-target_compile_features(tvmdp_compiler_flags INTERFACE cxx_std_17)
-
-# add compiler warning flags
-set(gcc_like_cxx "$<COMPILE_LANG_AND_ID:CXX,Clang,GNU>")
-target_compile_options(tvmdp_compiler_flags INTERFACE
-  "$<${gcc_like_cxx}:$<BUILD_INTERFACE:-Wall;-Wextra;-Wshadow;-Wdeprecated;-Wunused;-Wundef;-Wuninitialized;-Wcast-qual;>>"
-)
-
-target_compile_options(tvmdp_compiler_flags INTERFACE
-  "$<${gcc_like_cxx}:$<BUILD_INTERFACE:-Wmissing-include-dirs;-Wmissing-declarations;-Wpointer-arith;-Wsign-compare>>"
-)
-
-target_compile_options(tvmdp_compiler_flags INTERFACE
-  "$<${gcc_like_cxx}:$<BUILD_INTERFACE:-Wformat=2;-Wformat-truncation=2;-Wformat-overflow=2;-Walloc-zero>>"
-)
-
-# add compiler optimization flags
-set(gcc_like_cxx "$<COMPILE_LANG_AND_ID:CXX,Clang,GNU>")
-target_compile_options(tvmdp_compiler_flags INTERFACE
-  "$<${gcc_like_cxx}:$<BUILD_INTERFACE:-O3>>"
-)
-
-# ensure -std=c++xx instead of -std=g++xx
+# set project options
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+set(CMAKE_COMPILE_WARNING_AS_ERROR ON)
 
-# support folders in IDEs
-set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+# enable all warnings
+add_compile_options(-Wall -Wextra -Wpedantic)
 
-# skip RPATH
-set(CMAKE_SKIP_BUILD_RPATH TRUE)
+# public headers list
+set(TVMDP_HEADERS
+  "${PROJECT_SOURCE_DIR}/include/tvmdp.h"
+)
 
-# enable testing
-include(CTest)
+# sources
+set(TVMDP_SOURCES
+  "${PROJECT_SOURCE_DIR}/src/tvmdp.cpp"
+)
 
-find_package(OpenMP)
-if (OPENMP_FOUND)
-    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
-    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
-    set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
-endif()
+# define libtvmdp
+add_library(tvmdp ${TVMDP_SOURCES} ${TVMDP_HEADERS})
 
-# find dmlc headers
-find_package(dmlc REQUIRED)
-if(dmlc_FOUND)
-  target_link_libraries(tvmdp_compiler_flags INTERFACE dmlc::dmlc)
-endif()
+# include directories
+target_include_directories(tvmdp PRIVATE ${PROJECT_SOURCE_DIR}/include)
 
-# find dlpack headers
-find_package(dlpack REQUIRED)
-if(dlpack_FOUND)
-  target_link_libraries(tvmdp_compiler_flags INTERFACE dlpack::dlpack)
-endif()
+# additional properties
+set_property(TARGET tvmdp PROPERTY VERSION ${tvmdp_VERSION_MAJOR}.${tvmdp_VERSION_MINOR}.${tvmdp_VERSION_PATCH})
+set_property(TARGET tvmdp PROPERTY SOVERSION ${tvmdp_VERSION_MAJOR})
 
-# find jansson library and headers, update flags
+# find jansson library, use pkg-config as fallback
 find_package(jansson QUIET)
-
 if(jansson_FOUND)
-  target_link_libraries(tvmdp_compiler_flags INTERFACE jansson::jansson)
+  target_link_libraries(tvmdp PUBLIC jansson::jansson)
 else()
   include(FindPkgConfig)
   set(PKG_CONFIG_USE_CMAKE_PREFIX_PATH ON)
   pkg_search_module(JANSSON REQUIRED jansson)
   include_directories(${JANSSON_INCLUDE_DIRS})
-  target_link_libraries(tvmdp_compiler_flags INTERFACE ${JANSSON_LDFLAGS})
+  target_link_libraries(tvmdp PUBLIC ${JANSSON_LDFLAGS})
 endif()
 
-# find tvm library and runtime headers, update flags
+# find dlpack, headers only
+find_package(dlpack REQUIRED)
+target_link_libraries(tvmdp PUBLIC dlpack::dlpack)
+
+# find dmlc, headers only
+find_package(OpenMP)
+find_package(dmlc REQUIRED)
+target_link_libraries(tvmdp PUBLIC dmlc::dmlc)
+
+# find tvm
 find_package(tvm REQUIRED)
+target_link_libraries(tvmdp PUBLIC tvm::tvm_runtime)
 
-if(tvm_FOUND)
-  target_link_libraries(tvmdp_compiler_flags INTERFACE
-    -Wl,--whole-archive,$<TARGET_FILE:tvm::tvm_runtime>,--no-whole-archive)
-endif()
+# link with libdl
+target_link_libraries(tvmdp PUBLIC ${CMAKE_DL_LIBS})
 
-# find Pthreads library
-set(THREADS_PREFER_PTHREAD_FLAG ON)
-find_package(Threads REQUIRED)
-target_link_libraries(tvmdp_compiler_flags INTERFACE Threads::Threads)
+# setup standard installation directories
+include(GNUInstallDirs)
 
-# Check for library with dlopen
-target_link_libraries(tvmdp_compiler_flags INTERFACE ${CMAKE_DL_LIBS})
+# install headers
+install(
+  FILES ${TVMDP_HEADERS}
+  DESTINATION include)
 
-# library source code
-add_subdirectory(src)
+# install libraries
+install(
+  TARGETS tvmdp
+  EXPORT tvmdpTargets
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib)
 
-# unit tests
-if(BUILD_TESTING)
-  add_subdirectory(tests)
-endif()
+install(
+  EXPORT tvmdpTargets
+  FILE tvmdpTargets.cmake
+  NAMESPACE tvmdp::
+  DESTINATION lib/cmake/tvmdp)
+
+# install package configurations
+include(CMakePackageConfigHelpers)
+configure_package_config_file(
+  ${PROJECT_SOURCE_DIR}/config/tvmdp-config.cmake.in
+  ${CMAKE_BINARY_DIR}/cmake/tvmdp-config.cmake
+  INSTALL_DESTINATION lib/cmake/tvmdp)
+write_basic_package_version_file(
+  ${CMAKE_BINARY_DIR}/cmake/tvmdp-config-version.cmake
+  VERSION ${TVMDP_VERSION}
+  COMPATIBILITY AnyNewerVersion)
+install(
+  FILES ${CMAKE_BINARY_DIR}/cmake/tvmdp-config.cmake ${CMAKE_BINARY_DIR}/cmake/tvmdp-config-version.cmake
+  DESTINATION lib/cmake/tvmdp)
+
+# generate pkg-config
+set(target tvmdp)
+configure_file(
+  ${PROJECT_SOURCE_DIR}/config/tvmdp.pc.in
+  ${CMAKE_CURRENT_BINARY_DIR}/tvmdp.pc @ONLY)
+
+install(
+  FILES ${CMAKE_CURRENT_BINARY_DIR}/tvmdp.pc
+  DESTINATION lib/pkgconfig)
 
 # documentation
 add_subdirectory(docs)
-
-# cmake package config generation
-include(CMakePackageConfigHelpers)
-install(TARGETS tvmdp_compiler_flags EXPORT tvmdpTargets)
-
-install(EXPORT tvmdpTargets
-  NAMESPACE tvmdp::
-  DESTINATION lib/cmake/tvmdp
-)
-
-configure_package_config_file(${PROJECT_SOURCE_DIR}/config/Config.cmake.in
-  ${CMAKE_CURRENT_BINARY_DIR}/tvmdpConfig.cmake
-  INSTALL_DESTINATION lib/cmake/tvmdp
-)
-
-write_basic_package_version_file(${CMAKE_CURRENT_BINARY_DIR}/tvmdpConfigVersion.cmake
-  COMPATIBILITY SameMajorVersion
-)
-
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/tvmdpConfig.cmake
-  ${CMAKE_CURRENT_BINARY_DIR}/tvmdpConfigVersion.cmake
-  DESTINATION lib/cmake/tvmdp
-)
-
-# generate pkgconfig
-set(target tvmdp)
-configure_file(${PROJECT_SOURCE_DIR}/config/tvmdp.pc.in
-  ${CMAKE_CURRENT_BINARY_DIR}/tvmdp.pc @ONLY)
-
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/tvmdp.pc
-  DESTINATION lib/pkgconfig
-)

@@ -82,14 +82,6 @@ struct tvmdp_ml_result {
 };
 
 int
-tvmdp_hello(void)
-{
-	std::cout << "Hello TVMDP!!!" << std::endl;
-
-	return 0;
-}
-
-int
 tvmdp_configure(uint16_t nb_models, tvmdp_clock_cb_t clock)
 {
 	/* Check for configuration status */
