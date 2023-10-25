@@ -400,6 +400,12 @@ tvmdp_model_metadata_get_stage1(void *buffer, size_t size, void *metadata_addr)
 		json_obj = json_object_get(json_array, "op");
 
 		if (strcmp(json_string_value(json_obj), "tvm_op") == 0) {
+			if (metadata->model.nb_layers >= TVMDP_MODEL_LAYERS_MAX) {
+				std::cerr << "Number of layers > Max layers supported by TVMDP ("
+					  << TVMDP_MODEL_LAYERS_MAX << ")" << std::endl;
+				return -ENOTSUP;
+			}
+
 			/* Get the Layer Name */
 			json_obj = json_object_get(json_array, "name");
 			strcpy(metadata->model.layer[metadata->model.nb_layers].name,

@@ -63,7 +63,7 @@ struct tvmdp_model_object {
 };
 
 /* Maximum number of layers per model */
-#define TVMDP_MODEL_LAYERS_MAX 32
+#define TVMDP_MODEL_LAYERS_MAX 128
 
 /* TVM metadata: Model section */
 struct tvmdp_metadata_model_layer {
