@@ -245,6 +245,7 @@ tvmdp_model_metadata_get(uint16_t model_id, void *metadata_addr)
 	tvm::runtime::Map<tvm::runtime::String, tvm::runtime::NDArray> Map;
 	tvm::runtime::ShapeTuple shape;
 	tvm::runtime::NDArray io_array;
+	tvm::runtime::DataType dtype;
 	tvm::runtime::Module *module;
 	TVMByteArray params;
 
@@ -257,7 +258,6 @@ tvmdp_model_metadata_get(uint16_t model_id, void *metadata_addr)
 
 	struct tvmdp_model_metadata *metadata;
 	struct tvmdp_model_object object;
-	DLDataType dtype;
 	int flag = 0;
 	int i;
 
@@ -327,22 +327,21 @@ tvmdp_model_metadata_get(uint16_t model_id, void *metadata_addr)
 	/* Set model name */
 	snprintf(metadata->model.name, TVMDP_NAME_STRLEN, "%s_%u", "Model", model_id);
 
-	/* Set Model datatype */
-	dtype = DLDataType{kDLFloat, 32, 1};
-
 	/* Get input shape */
 	for (i = 0; i < metadata->model.num_input; i++) {
 		io_array = module->GetFunction("get_input")(metadata->input[i].name);
 		shape = io_array.Shape();
+		dtype = io_array.DataType();
 		metadata->input[i].ndim = 0;
 
 		for (auto &p : shape) {
 			metadata->input[i].shape[metadata->input[i].ndim] = p;
 			metadata->input[i].ndim++;
 		}
+
 		/* Set device type and device id */
 		metadata->input[i].device = data.device;
-		metadata->input[i].datatype = dtype;
+		metadata->input[i].datatype = {kDLFloat, 32, 1};
 		metadata->input[i].model_datatype = dtype;
 		metadata->input[i].scale = 1.0;
 		metadata->input[i].format = 0;
@@ -352,15 +351,17 @@ tvmdp_model_metadata_get(uint16_t model_id, void *metadata_addr)
 	for (i = 0; i < metadata->model.num_output; i++) {
 		io_array = module->GetFunction("get_output")(i);
 		shape = io_array.Shape();
+		dtype = io_array.DataType();
 		metadata->output[i].ndim = 0;
 
 		for (auto &p : shape) {
 			metadata->output[i].shape[metadata->output[i].ndim] = p;
 			metadata->output[i].ndim++;
 		}
+
 		/* Set device type and device id */
 		metadata->output[i].device = data.device;
-		metadata->output[i].datatype = dtype;
+		metadata->output[i].datatype = {kDLFloat, 32, 1};
 		metadata->output[i].model_datatype = dtype;
 		metadata->output[i].scale = 1.0;
 		metadata->output[i].format = 0;
