@@ -341,7 +341,7 @@ tvmdp_model_metadata_get(uint16_t model_id, void *metadata_addr)
 
 		/* Set device type and device id */
 		metadata->input[i].device = data.device;
-		metadata->input[i].datatype = {kDLFloat, 32, 1};
+		metadata->input[i].datatype = dtype;
 		metadata->input[i].model_datatype = dtype;
 		metadata->input[i].scale = 1.0;
 		metadata->input[i].format = 0;
@@ -361,7 +361,7 @@ tvmdp_model_metadata_get(uint16_t model_id, void *metadata_addr)
 
 		/* Set device type and device id */
 		metadata->output[i].device = data.device;
-		metadata->output[i].datatype = {kDLFloat, 32, 1};
+		metadata->output[i].datatype = dtype;
 		metadata->output[i].model_datatype = dtype;
 		metadata->output[i].scale = 1.0;
 		metadata->output[i].format = 0;
